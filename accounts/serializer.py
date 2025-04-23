@@ -62,3 +62,7 @@ class OutPutRegisterSerializer(serializers.ModelSerializer):
         data["access"] = str(refresh.access_token)
 
         return data
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150)
+    password = serializers.CharField(max_length=150)
