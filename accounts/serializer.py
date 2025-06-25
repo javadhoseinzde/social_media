@@ -24,8 +24,10 @@ class InputRegisterSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
     confirm_password = serializers.CharField(max_length=255)
+    is_active = serializers.BooleanField(default=False)
     is_admin = serializers.BooleanField(default=False)
     is_superuser = serializers.BooleanField(default=False)
+    is_client_user = serializers.BooleanField(default=False)
 
     def validate_username(self, username):
         if User.objects.filter(username=username).exists():

@@ -27,6 +27,7 @@ class RegisterApi(APIView):
                     picture=serializer.validated_data.get("picture"),
                     is_admin=serializer.validated_data.get("is_admin"),
                     is_superuser=serializer.validated_data.get("is_superuser"),
+                    is_client_user=serializer.validated_data.get("is_client_user"),
                 )
 
                 result = result_message(
