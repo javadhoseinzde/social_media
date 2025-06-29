@@ -6,8 +6,9 @@ from django.db import models
 
 class BaseUserManager(BUM):
     def create_user(
-        self, username, is_active=True, is_admin=False, password=None
+        self, username, name, is_active=True, is_admin=False, is_client_user=True, password=None
     ):
+        print(name)
         if not username:
             raise ValueError("Users must have a Username")
 
@@ -15,6 +16,8 @@ class BaseUserManager(BUM):
             username=username,
             is_active=is_active,
             is_admin=is_admin,
+            is_client_user=is_client_user,
+            name=name
         )
 
         if password is not None:
@@ -59,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = "username"
 
     def __str__(self):
-        return self.username
+        return str(self.username)
 
     class Meta:
         db_table = "profile"

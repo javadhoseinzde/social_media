@@ -1,32 +1,21 @@
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import make_password
-from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from Temp.message import result_message
-from Temp.permissions import *
 from .serializer import *
 from drf_spectacular.utils import extend_schema
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken, TokenError
 
 class RegisterApi(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
-        serializer = InputRegisterSerializer(data=request.data)
         try:
+            serializer = InputRegisterSerializer(data=request.data)
             if serializer.is_valid(raise_exception=True):
-                user = get_user_model().objects.create(
-                    username=serializer.validated_data.get("username"),
-                    name=serializer.validated_data.get("name"),
-                    password=make_password(serializer.validated_data["password"]),
-                    is_admin=serializer.validated_data.get("is_admin"),
-                    is_superuser=serializer.validated_data.get("is_superuser"),
-                    is_client_user=serializer.validated_data.get("is_client_user"),
-                )
-
+                user = serializer.save()
                 result = result_message(
                     "CREATED",
                     status.HTTP_201_CREATED,
