@@ -46,9 +46,6 @@ class BaseUserManager(BUM):
 class User(AbstractBaseUser, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True, null=True)
     name = models.CharField(max_length=200, blank=True, null=True)
-    phone_number = models.CharField(unique=True, blank=True, null=True, max_length=11)
-    email = models.EmailField(unique=True, blank=True, null=True)
-    picture = models.ImageField(null=True, blank=True, upload_to="account/avatar")
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
@@ -65,4 +62,4 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.username
 
     class Meta:
-        db_table = "User"
+        db_table = "profile"

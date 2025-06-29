@@ -10,17 +10,6 @@ from Temp.validators import letter_validator, number_validator, special_char_val
 
 class InputRegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255, required=False)
-    phone_number = serializers.CharField(
-        validators=[
-            number_validator,
-            letter_validator,
-            special_char_validator,
-            MinLengthValidator(limit_value=11),
-        ],
-        max_length=11,
-        required=False,
-    )
-    email = serializers.EmailField(required=False)
     username = serializers.CharField(max_length=255)
     password = serializers.CharField(max_length=255)
     confirm_password = serializers.CharField(max_length=255)
