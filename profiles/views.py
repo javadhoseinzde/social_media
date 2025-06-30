@@ -1,3 +1,113 @@
 from django.shortcuts import render
-
+from rest_framework import status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from Temp.message import result_message, duplicate_field_error_message
+from .serializer import *
 # Create your views here.
+
+class ProfileApi(APIView):
+    def get(self, request):
+        try:
+            if request.user.is_superuser:
+                profile =  Profile.objects.all()
+                serializer = ProfileSrializer(profile, many=True)
+                result = result_message(
+                    "OK",
+                    status.HTTP_200_OK,
+                    serializer.data
+                )
+                return Response(result, status=status.HTTP_200_OK)
+            else:
+                result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, "you do not have access")
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, f"{e}")
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        user = request.user.id
+        try:
+            serializer = ProfileSrializer(data=request.data, context={'request': request})
+            if serializer.is_valid(raise_exception=True):
+                if Profile.objects.filter(user=user):
+                    result = duplicate_field_error_message(
+                        "DUPLOCATED",
+                        status.HTTP_400_BAD_REQUEST,
+                        "A profile for this user already exists",
+                    )
+                    return Response(result, status=status.HTTP_400_BAD_REQUEST)
+                serializer.save()
+                result = result_message("CREATED",status.HTTP_201_CREATED,serializer.data)
+                return Response(result, status=status.HTTP_201_CREATED)
+            else:
+                result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, serializer.errors)
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, f"{e}")
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+class ProfileDetailApi(APIView):
+    def get(self, request, id):
+        user = request.user.id
+        try:
+            profile =  Profile.objects.get(id=id)
+            serializer = ProfileSrializer(profile)
+            result = result_message(
+                "OK",
+                status.HTTP_200_OK,
+                serializer.data
+            )
+            return Response(result, status=status.HTTP_200_OK)
+        except Profile.DoesNotExist:
+            result = result_message(
+                "NOT_FOUND",
+                status.HTTP_404_NOT_FOUND,
+                "Profile not found for this user."
+            )
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, f"{e}")
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, id):
+        try:
+            profile = Profile.objects.get(id=id)
+
+            # بررسی اینکه فقط صاحب پروفایل بتونه ویرایش کنه
+            if profile.user != request.user:
+                result = result_message(
+                    "FORBIDDEN",
+                    status.HTTP_403_FORBIDDEN,
+                    "You do not have permission to update this profile."
+                )
+                return Response(result, status=status.HTTP_403_FORBIDDEN)
+
+            serializer = ProfileSrializer(profile, data=request.data, partial=True, context={'request': request})
+            if serializer.is_valid(raise_exception=True):
+                serializer.save()
+                result = result_message(
+                    "UPDATED",
+                    status.HTTP_200_OK,
+                    serializer.data
+                )
+                return Response(result, status=status.HTTP_200_OK)
+
+        except Profile.DoesNotExist:
+            result = result_message(
+                "NOT_FOUND",
+                status.HTTP_404_NOT_FOUND,
+                "Profile not found."
+            )
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+
+        except Exception as e:
+            result = result_message(
+                "ERROR",
+                status.HTTP_400_BAD_REQUEST,
+                f"{e}"
+            )
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
