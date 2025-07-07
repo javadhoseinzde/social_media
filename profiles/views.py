@@ -111,3 +111,91 @@ class ProfileDetailApi(APIView):
                 f"{e}"
             )
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
+class FollowApi(APIView):
+    def post(self, request):
+        user = self.request.user
+        try:
+            serializer = FollowSerializer(data=request.data, context={'request': request})
+            if serializer.is_valid(raise_exception=True):
+                serializer.save(from_user=user)
+            else:
+                result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, serializer.errors)
+                return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            result = result_message(
+                "ERROR",
+                status.HTTP_400_BAD_REQUEST,
+                f"{e}"
+            )
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class FollowDetailView(APIView):
+    def get(self, request, id):
+        try:
+            query = Follower.objects.filter()
+            serializer = FollowerSerializer(query, many=True, context={'request': request})
+            result = result_message(
+                "OK",
+                status.HTTP_200_OK,
+                {
+                    "result": serializer,
+                }
+            )
+            return Response(result, status=status.HTTP_200_OK)
+        except Follower.DoesNotExist:
+            result = result_message(
+                "NOT_FOUND",
+                status.HTTP_404_NOT_FOUND,
+                "Follower not found."
+            )
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            result = result_message(
+                "ERROR",
+                status.HTTP_400_BAD_REQUEST,
+                f"{e}"
+            )
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request):
+        pass
+
+class FollowListApi(APIView):
+    def get(self, request):
+        user = request.user
+        try:
+            followers = user.followers.all()
+            followings = user.following.all()
+
+            followers_serialized = FollowerSerializer(followers, many=True, context={'request': request}).data
+            followings_serialized = FollowerSerializer(followings, many=True, context={'request': request}).data
+
+            result = result_message(
+                "OK",
+                status.HTTP_200_OK,
+                {
+                    "followers": followers_serialized,
+                    "followings": followings_serialized
+                }
+            )
+            return Response(result, status=status.HTTP_200_OK)
+
+
+        except Follower.DoesNotExist:
+            result = result_message(
+                "NOT_FOUND",
+                status.HTTP_404_NOT_FOUND,
+                "Follower not found."
+            )
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            result = result_message(
+                "ERROR",
+                status.HTTP_400_BAD_REQUEST,
+                f"{e}"
+            )
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
