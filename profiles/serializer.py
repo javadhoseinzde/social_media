@@ -49,7 +49,7 @@ class FollowerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follower
-        fields = ["to_user"]
+        fields = ["id","to_user"]
 
     def get_to_user(self, obj):
         try:

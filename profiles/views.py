@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from Temp.message import result_message, duplicate_field_error_message
 from .serializer import *
+from django.db.models import Q
+
 # Create your views here.
 
 class ProfileApi(APIView):
@@ -135,9 +137,12 @@ class FollowApi(APIView):
 
 class FollowDetailView(APIView):
     def get(self, request, id):
+        user = request.user
         try:
-            query = Follower.objects.filter()
-            serializer = FollowerSerializer(query, many=True, context={'request': request})
+            follower = Follower.objects.filter(
+                Q(id=id) & (Q(to_user=request.user) | Q(from_user=request.user))
+            )
+            serializer = FollowerSerializer(follower, many=True, context={'request': request}).data
             result = result_message(
                 "OK",
                 status.HTTP_200_OK,
@@ -161,9 +166,35 @@ class FollowDetailView(APIView):
             )
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request):
-        pass
+    def delete(self, request, id):
+        try:
+            follower = Follower.objects.get(id=id)
+            serializer = FollowerSerializer(follower, context={'request': request}).data
+            follower.delete()
 
+            result = result_message(
+                "OK",
+                status.HTTP_200_OK,
+                {
+                    "message": "Follower deleted successfully.",
+                    "deleted_data": serializer
+                }
+            )
+            return Response(result, status=status.HTTP_200_OK)
+        except Follower.DoesNotExist:
+            result = result_message(
+                "NOT_FOUND",
+                status.HTTP_404_NOT_FOUND,
+                "Follower not found."
+            )
+            return Response(result, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            result = result_message(
+                "ERROR",
+                status.HTTP_400_BAD_REQUEST,
+                f"{e}"
+            )
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
 class FollowListApi(APIView):
     def get(self, request):
         user = request.user
