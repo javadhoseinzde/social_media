@@ -76,17 +76,10 @@ class ProfileDetailApi(APIView):
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, id):
-        try:
-            profile = Profile.objects.get(id=id)
+        user = request.user.id
 
-            # بررسی اینکه فقط صاحب پروفایل بتونه ویرایش کنه
-            if profile.user != request.user:
-                result = result_message(
-                    "FORBIDDEN",
-                    status.HTTP_403_FORBIDDEN,
-                    "You do not have permission to update this profile."
-                )
-                return Response(result, status=status.HTTP_403_FORBIDDEN)
+        try:
+            profile = Profile.objects.get(id=id, user=user)
 
             serializer = ProfileSrializer(profile, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid(raise_exception=True):
