@@ -116,6 +116,8 @@ class FollowApi(APIView):
             serializer = FollowSerializer(data=request.data, context={'request': request})
             if serializer.is_valid(raise_exception=True):
                 serializer.save(from_user=user)
+                result = result_message("CREATED",status.HTTP_201_CREATED,serializer.data)
+                return Response(result, status=status.HTTP_201_CREATED)
             else:
                 result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, serializer.errors)
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
@@ -162,7 +164,7 @@ class FollowDetailView(APIView):
 
     def delete(self, request, id):
         try:
-            follower = Follower.objects.get(id=id)
+            follower = Follower.objects.get(to_user=id)
             serializer = FollowerSerializer(follower, context={'request': request}).data
             follower.delete()
 
@@ -170,7 +172,7 @@ class FollowDetailView(APIView):
                 "OK",
                 status.HTTP_200_OK,
                 {
-                    "message": "Follower deleted successfully.",
+                    "message": "unfollow successfully.",
                     "deleted_data": serializer
                 }
             )
@@ -189,6 +191,7 @@ class FollowDetailView(APIView):
                 f"{e}"
             )
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
+
 class FollowListApi(APIView):
     def get(self, request):
         user = request.user

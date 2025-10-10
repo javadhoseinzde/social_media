@@ -39,7 +39,8 @@ THIRD_PARTY_APP = [
 
 LOCAL_APP = [
     "accounts.apps.AccountsConfig",
-    "profiles.apps.ProfilesConfig"
+    "profiles.apps.ProfilesConfig",
+    "posts"
 ]
 
 INSTALLED_APPS = [
