@@ -19,8 +19,6 @@ class InputRegisterSerializer(serializers.ModelSerializer):
             "password",
             "confirm_password",
             "is_active",
-            "is_admin",
-            "is_superuser",
             "is_client_user",
         ]
 

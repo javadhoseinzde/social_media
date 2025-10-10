@@ -6,7 +6,7 @@ from django.db import models
 
 class BaseUserManager(BUM):
     def create_user(
-        self, username, name, is_active=True, is_admin=False, is_client_user=True, password=None
+        self, username, name=None, is_active=True, is_admin=False, is_client_user=True,is_staff=False, password=None
     ):
         print(name)
         if not username:
@@ -17,6 +17,7 @@ class BaseUserManager(BUM):
             is_active=is_active,
             is_admin=is_admin,
             is_client_user=is_client_user,
+            is_staff=is_staff,
             name=name
         )
 
