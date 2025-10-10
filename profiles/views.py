@@ -14,7 +14,7 @@ class ProfileApi(APIView):
         try:
             if request.user.is_superuser:
                 profile =  Profile.objects.all()
-                serializer = ProfileSrializer(profile, many=True)
+                serializer = ProfileSerializer(profile, many=True)
                 result = result_message(
                     "OK",
                     status.HTTP_200_OK,
@@ -32,7 +32,7 @@ class ProfileApi(APIView):
     def post(self, request):
         user = request.user.id
         try:
-            serializer = ProfileSrializer(data=request.data, context={'request': request})
+            serializer = ProfileSerializer(data=request.data, context={'request': request})
             if serializer.is_valid(raise_exception=True):
                 if Profile.objects.filter(user=user):
                     result = duplicate_field_error_message(
@@ -56,7 +56,7 @@ class ProfileDetailApi(APIView):
         user = request.user.id
         try:
             profile =  Profile.objects.get(id=id)
-            serializer = ProfileSrializer(profile)
+            serializer = ProfileSerializer(profile)
             result = result_message(
                 "OK",
                 status.HTTP_200_OK,
@@ -81,7 +81,7 @@ class ProfileDetailApi(APIView):
         try:
             profile = Profile.objects.get(id=id, user=user)
 
-            serializer = ProfileSrializer(profile, data=request.data, partial=True, context={'request': request})
+            serializer = ProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid(raise_exception=True):
                 serializer.save()
                 result = result_message(
