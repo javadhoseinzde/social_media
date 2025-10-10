@@ -1,0 +1,15 @@
+from django.urls import path
+
+from .models import Profile
+from .views import ProfileApi, ProfileDetailApi, FollowListApi, FollowApi, FollowDetailView
+
+urlpatterns = [
+    path("profile-list/", ProfileApi.as_view(), name="profile-list"),
+    path("create-profile/", ProfileApi.as_view(), name="create-profile"),
+    path("detail-profile/", ProfileDetailApi.as_view(), name="detail-create"),
+
+    path("follower-list/", FollowListApi.as_view(),name="follower-list"),
+    path("create-follower/", FollowApi.as_view(),name="create-follower"),
+    path("follow/<int:id>/", FollowDetailView.as_view(),name="get-follow"),
+
+]
