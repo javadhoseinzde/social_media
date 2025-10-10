@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from rest_framework import status
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from Temp.message import result_message, duplicate_field_error_message
@@ -10,6 +10,7 @@ from django.db.models import Q
 # Create your views here.
 
 class ProfileApi(APIView):
+    permissions = [IsAdminUser]
     def get(self, request):
         try:
             if request.user.is_superuser:
