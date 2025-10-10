@@ -116,6 +116,8 @@ class FollowApi(APIView):
             serializer = FollowSerializer(data=request.data, context={'request': request})
             if serializer.is_valid(raise_exception=True):
                 serializer.save(from_user=user)
+                result = result_message("CREATED",status.HTTP_201_CREATED,serializer.data)
+                return Response(result, status=status.HTTP_201_CREATED)
             else:
                 result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, serializer.errors)
                 return Response(result, status=status.HTTP_400_BAD_REQUEST)
