@@ -76,11 +76,11 @@ class ProfileDetailApi(APIView):
             result = result_message("ERROR", status.HTTP_400_BAD_REQUEST, f"{e}")
             return Response(result, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, id):
+    def put(self, request):
         user = request.user.id
 
         try:
-            profile = Profile.objects.get(id=id, user=user)
+            profile = Profile.objects.get(user=user)
 
             serializer = ProfileSerializer(profile, data=request.data, partial=True, context={'request': request})
             if serializer.is_valid(raise_exception=True):
