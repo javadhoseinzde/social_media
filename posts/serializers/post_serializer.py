@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from posts.models.post import Post
 
-class ProfileSerializer(serializers.ModelSerializer):
+class PostSerializer(serializers.ModelSerializer):
     class Meta:
         models = Post
         exclude = [
