@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from Temp.message import result_message, duplicate_field_error_message
+from django.shortcuts import get_object_or_404
 
 class PostApi(APIView):
     permission_classes = [IsAuthenticated]
@@ -35,8 +36,15 @@ class PostApi(APIView):
         return Response(result, status=status.HTTP_201_CREATED)
 
 class PostDetailApi(APIView):
-    def get(self):
-        pass
+    def get(self,request, id):
+        post = get_object_or_404(Post, id=id, user=request.user)
+        serializer = PostSerializer(post, context={'request':request})
+        result = result_message(
+            "OK",
+            status.HTTP_200_OK,
+            serializer.data
+        )
+        return Response(result, status=status.HTTP_200_OK)
 
     def put(self):
         pass
