@@ -165,3 +165,7 @@ SIMPLE_JWT = {
 }
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+REST_FRAMEWORK = {
+    'EXCEPTION_HANDLER': 'Temp.exception_handler.custom_exception_handler'
+}
