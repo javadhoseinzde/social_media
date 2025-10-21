@@ -12,3 +12,13 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = "__all__"
+
+    def validate(self, attrs):
+        caption = attrs.get('caption')
+        image = attrs.get('image')
+
+        if not caption and not image:
+            raise serializers.ValidationError(
+                {"non_field_error": "Post must contain at least a caption or an image."}
+            )
+        return attrs
