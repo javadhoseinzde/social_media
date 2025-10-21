@@ -157,6 +157,8 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'EXCEPTION_HANDLER': 'Temp.exception_handler.custom_exception_handler'
+
 }
 
 SIMPLE_JWT = {
@@ -165,7 +167,3 @@ SIMPLE_JWT = {
 }
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-REST_FRAMEWORK = {
-    'EXCEPTION_HANDLER': 'Temp.exception_handler.custom_exception_handler'
-}
